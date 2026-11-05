@@ -1,0 +1,1175 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Maziwa Book</title><meta name="theme-color" content="#1F5FE0"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%84%3C/text%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body class="locked">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one narrow column like a phone app. Header, two views (Today with profit history, Wallet), fixed bottom tab bar. */
+/* Milk palette: cream and milk-white, cocoa-caramel accent, warm dark mode. */
+/* Milk theme: carton blue, white and cow. Light by day, deep navy at night (follows the phone). */
+:root {
+  --bg: #F3F7FD; --surface: #FFFFFF; --ink: #0F1B3D; --muted: #5B6B8C; --line: #E1EAF6;
+  --accent: #1F5FE0; --accent-ink: #FFFFFF; --tint: #E6F0FF;
+  --lala: #7B4FD6; --egg: #F08A24; --good: #1E9E58; --bad: #E0463B; --bad-tint: #FDE8E5;
+  --blue1: #3B86FF; --blue2: #1A4FD1;
+  --shadow: 0 1px 2px rgba(20,60,140,.06), 0 8px 24px rgba(20,60,140,.09);
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #08162F; --surface: #10244A; --ink: #F2F6FF; --muted: #9DB0D6; --line: #1E3668;
+    --accent: #3D86FF; --accent-ink: #FFFFFF; --tint: #17305F;
+    --lala: #B38CFF; --egg: #FFA64D; --good: #4CD98A; --bad: #FF7A70; --bad-tint: #3A1E2A;
+    --blue1: #2F7BFF; --blue2: #153FB0;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg);  color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.4; -webkit-tap-highlight-color: transparent; }
+button, input { font: inherit; color: inherit; }
+.app { max-width: 520px; margin: 0 auto; min-height: 100%; padding: 0 16px 96px; display: flex; flex-direction: column; gap: 16px; }
+.view { display: grid; gap: 16px; }
+[hidden] { display: none !important; }
+
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 18px; }
+.top .sync { flex: none; font-size: .72rem; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; letter-spacing: -.02em; display: flex; align-items: center; gap: 10px; }
+.brand { white-space: nowrap; gap: 10px; font-size: 1.45rem; }
+.logo { font-size: 2.3rem; line-height: 1; }
+
+.sync { font-size: .75rem; font-weight: 600; color: var(--muted); background: var(--surface); border: 1px solid var(--line); padding: 4px 10px; border-radius: 99px; white-space: nowrap; }
+.sync::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); margin-right: 6px; vertical-align: 1px; }
+.sync.online::before { background: var(--good); }
+
+/* hero */
+.hero { position: relative; overflow: hidden; color: var(--ink); border: 1px solid var(--line); border-radius: 26px; padding: 20px 20px 18px; box-shadow: var(--shadow); display: grid; gap: 14px;
+  background: linear-gradient(170deg, var(--milk1) 55%, var(--milk2)); }
+.hero .row div span.em, .em { display: inline !important; }
+.em { font-size: 1.45em; line-height: 1; vertical-align: -.12em; margin-right: .2em; font-style: normal; }
+.hero .row div .em { font-size: 1.5em; margin-right: .25em; }
+.hero:not(.hero-w)::before { content: "🥛"; position: absolute; right: 16px; top: 38px; font-size: 4.4rem; line-height: 1; filter: drop-shadow(0 6px 8px rgba(60,50,20,.18)); pointer-events: none; }
+.hero-w .label .em { font-size: 1.3em; }
+.hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 14px; pointer-events: none;
+  background: var(--tint); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' preserveAspectRatio='none'%3E%3Cpath d='M0 7c10-8 20-8 30 0s20 8 30 0 20-8 30 0 20 8 30 0v7H0z'/%3E%3C/svg%3E") bottom / 120px 14px repeat-x; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' preserveAspectRatio='none'%3E%3Cpath d='M0 7c10-8 20-8 30 0s20 8 30 0 20-8 30 0 20 8 30 0v7H0z'/%3E%3C/svg%3E") bottom / 120px 14px repeat-x; }
+.hero { padding-bottom: 26px; }
+.hero .label { color: var(--muted); font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+.hero .big .cur { font-size: .42em; font-weight: 700; letter-spacing: 0; opacity: .7; margin-right: 2px; }
+.hero .big { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 12vw, 3.4rem); letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.oprow { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; }
+.oprow b { font-family: var(--font-display); font-variant-numeric: tabular-nums; text-align: right; }
+.oprow span { font-size: .8rem; color: var(--muted); }
+.walletrow { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); gap: 10px; align-items: stretch; }
+.hero-w { min-width: 0; overflow: hidden; padding: 16px 14px; gap: 10px; align-content: start; }
+.hero.hero-w .big { font-size: clamp(1.5rem, 7.2vw, 2rem); white-space: nowrap; overflow-wrap: normal; }
+.hero.hero-w .big .cur { font-size: .55em; }
+.hero.hero-w .row { grid-template-columns: 1fr; gap: 6px; padding-top: 10px; }
+.hero.hero-w .row div { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.hero.hero-w .row div b { font-size: .92rem; white-space: nowrap; }
+.open-card { display: grid; gap: 10px; align-content: start; padding: 16px 14px; margin: 0; }
+.open-card .label { font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.open-card .open-card input { font-size: .95rem; padding: 0 10px; }
+.open-card .oplink { justify-self: start; background: none; border: 0; padding: 0; color: var(--accent); font: 600 .85rem var(--font-body, inherit); text-decoration: underline; cursor: pointer; }
+.hero.hero-w .row div span { white-space: nowrap; }
+.hero.hero-w .row div .em { font-size: 1.25em; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.hero .row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; border-top: 1px solid var(--line); padding-top: 12px; }
+.hero .row div span { display: block; font-size: .72rem; color: var(--muted); }
+.hero .row div b { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+/* day line */
+.dayline { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dayline .nm { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; }
+.dayline .sub { display: block; font-size: .8rem; color: var(--muted); font-weight: 600; }
+
+/* cards + fields */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 16px; display: grid; gap: 14px; box-shadow: var(--shadow); }
+.card h2 { margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; justify-content: flex-start; gap: 4px; }
+.card h2 > small, .card h2 > .pill, .card h2 > button { margin-left: auto; }
+.card h2 small { font-family: var(--font-body); font-weight: 500; color: var(--muted); font-size: .8rem; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label { font-size: .82rem; font-weight: 600; color: var(--muted); }
+.input-wrap { position: relative; }
+.input-wrap input { width: 100%; height: 52px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--bg); padding: 0 52px 0 14px; font-size: 1.15rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.input-wrap .unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: .85rem; color: var(--muted); font-weight: 600; pointer-events: none; }
+.input-wrap input::placeholder { color: var(--muted); opacity: .45; }
+input:focus-visible, button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent); outline-offset: 2px; border-color: var(--accent); }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.hint { font-size: .85rem; color: var(--muted); display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--tint); border-radius: 12px; padding: 10px 12px; }
+.hint b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.pill { display: inline-block; font-size: .72rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--tint); color: var(--accent); }
+.pos { color: var(--good); } .neg { color: var(--bad); }
+.warn { background: var(--bad-tint); color: var(--bad); border-radius: 12px; padding: 10px 12px; font-size: .88rem; font-weight: 600; }
+
+/* buttons */
+.btn { height: 54px; border-radius: 16px; border: 0; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 1.05rem; cursor: pointer; width: 100%; }
+.btn:active { transform: scale(.98); }
+.btn.ghost { background: transparent; color: var(--bad); border: 1.5px solid var(--line); height: 46px; font-size: .95rem; }
+.btn.ghost.armed { background: var(--bad-tint); border-color: var(--bad); }
+.btn.mini { height: 40px; width: auto; padding: 0 14px; font-size: .85rem; border-radius: 12px; }
+.btn.soft { background: var(--tint); color: var(--accent); }
+.actions { display: grid; gap: 10px; }
+.setrow { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+
+/* lists */
+.list { display: grid; gap: 10px; }
+.day { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; text-align: left; width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; cursor: pointer; box-shadow: var(--shadow); }
+.day .d { font-family: var(--font-display); font-weight: 700; }
+.day .s { grid-column: 1; font-size: .82rem; color: var(--muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.day .p { grid-row: 1 / span 2; grid-column: 2; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; text-align: right; font-variant-numeric: tabular-nums; }
+.day.hist .p { grid-row: 1; }
+.day.hist .cells { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px 12px; margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.day.hist .cells span { display: grid; gap: 1px; min-width: 0; }
+.day.hist .cells i { font-style: normal; font-size: .72rem; color: var(--muted); font-weight: 600; }
+.day.hist .cells b { font-size: .95rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.empty { text-align: center; color: var(--muted); padding: 36px 12px; display: grid; gap: 10px; justify-items: center; }
+.empty svg { width: 64px; height: 64px; }
+.empty b { color: var(--ink); font-family: var(--font-display); font-size: 1.1rem; }
+.sect { margin: 4px 2px 0; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+
+/* stats, chips, charts */
+.chips { display: flex; gap: 8px; }
+.chip { flex: 1; height: 42px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--surface); font-weight: 600; font-size: .9rem; cursor: pointer; color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chips.small .chip { height: 36px; font-size: .84rem; }
+.chart .negbar { fill: var(--bad); } .chart .exp { fill: var(--lala); }
+.shift { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: end; }
+.shift .btn { height: 52px; }
+.shiftbox { display: grid; gap: 8px; }
+.shift-title { font-family: var(--font-display); font-weight: 700; font-size: .95rem; }
+.shift4 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)) auto; gap: 8px; align-items: end; }
+.shift4 .btn { height: 48px; padding: 0 12px; }
+.shift4 .field label { font-size: .76rem; white-space: nowrap; }
+.input-wrap.compact input { height: 48px; padding: 0 8px; font-size: 1.05rem; text-align: center; }
+.chart .egg { fill: var(--egg); }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.grid3 .stat b { font-size: 1.05rem; }
+.shift3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)) auto; gap: 8px; align-items: end; }
+.row3 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)) auto; gap: 8px; align-items: end; }
+.row3 .btn { height: 48px; padding: 0 12px; }
+.row3:has(> .field:nth-child(3)) { grid-template-columns: repeat(3, minmax(0,1fr)) auto; }
+.row3 .field label { font-size: .76rem; white-space: nowrap; }
+.soldrow { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; margin-top: 10px; }
+.soldrow .btn { height: 48px; padding: 0 16px; }
+.shift3 .span2 { grid-column: span 2; }
+.shift3 .btn { height: 48px; padding: 0 12px; }
+.shift3 .field label { font-size: .76rem; white-space: nowrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; display: grid; gap: 2px; min-width: 0; }
+.stat span { font-size: .78rem; color: var(--muted); font-weight: 600; }
+.stat b { font-family: var(--font-display); font-size: 1.2rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.bigfig { font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.share { display: grid; gap: 6px; }
+.share .l { display: flex; justify-content: space-between; gap: 8px; font-size: .9rem; }
+.share .l span:first-child { color: var(--muted); font-weight: 600; }
+.share .l b { font-variant-numeric: tabular-nums; }
+.track { height: 10px; background: var(--tint); border-radius: 99px; overflow: hidden; }
+.fill { height: 100%; background: var(--accent); border-radius: 99px; }
+.chart { width: 100%; height: auto; display: block; }
+.chart .fresh { fill: var(--accent); } .chart .lala { fill: var(--lala); }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart text { fill: var(--muted); font-size: 9px; font-family: var(--font-body); }
+.chart .peak { fill: var(--ink); font-weight: 700; }
+.legend { display: flex; gap: 16px; font-size: .82rem; color: var(--muted); font-weight: 600; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend .a i { background: var(--accent); } .legend .b i { background: var(--lala); }
+
+/* tab bar */
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); }
+.tabs-in { max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.tab { display: grid; justify-items: center; gap: 2px; padding: 6px 0; border: 0; background: none; color: var(--muted); font-size: .75rem; font-weight: 700; cursor: pointer; border-radius: 14px; min-width: 0; }
+.tab .ti { font-size: 1.9rem; line-height: 1.05; }
+.tab[aria-selected="true"] { color: var(--accent); background: var(--tint); }
+
+.toast { position: fixed; left: 50%; bottom: calc(86px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 14px; font-weight: 600; font-size: .92rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; max-width: calc(100% - 32px); text-align: center; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.hero.hero-w { background: radial-gradient(70% 60% at 100% 0%, rgba(255,255,255,.34), transparent 60%), linear-gradient(135deg, var(--blue1), var(--blue2)); }
+@media (prefers-color-scheme: dark) { .brand .bk { background-image: linear-gradient(135deg, #8DBBFF, #3D86FF); } }
+@media (prefers-reduced-motion: reduce) { .toast, .btn { transition: none; } .btn:active { transform: none; } }
+
+/* ---- theme ---- */
+.brand .bk { color: var(--accent); margin-left: -4px; }
+.hero { color: #fff; border: 0; background: linear-gradient(135deg, var(--blue1), var(--blue2)); box-shadow: 0 10px 26px rgba(26,79,209,.28); }
+.hero .label { color: rgba(255,255,255,.82); opacity: 1; }
+.hero .big .cur { opacity: .85; }
+.hero .row { border-top-color: rgba(255,255,255,.25); }
+.hero .row div span { color: rgba(255,255,255,.8); }
+.hero::after { background: rgba(255,255,255,.16); }
+.hero:not(.hero-w)::before { filter: drop-shadow(0 8px 10px rgba(0,20,80,.35)); }
+.btn:not(.ghost):not(.soft) { background: linear-gradient(135deg, var(--blue1), var(--blue2)); color: #fff; box-shadow: 0 6px 14px rgba(31,95,224,.28); }
+.btn.soft { background: var(--tint); color: var(--accent); }
+.chip[aria-pressed="true"] { background: linear-gradient(135deg, var(--blue1), var(--blue2)); border-color: transparent; color: #fff; }
+.grid2 .stat:nth-child(1) { --c: var(--accent); }
+.grid2 .stat:nth-child(2) { --c: var(--egg); }
+.grid2 .stat:nth-child(3) { --c: var(--good); }
+.grid2 .stat:nth-child(4) { --c: var(--bad); }
+.grid2 .stat { background: color-mix(in srgb, var(--c) 13%, var(--surface)); border-color: color-mix(in srgb, var(--c) 28%, var(--line)); }
+.tab[aria-selected="true"] { color: var(--accent); background: var(--tint); }
+.card { border-radius: 22px; }
+.sync { background: var(--surface); }
+
+/* ---- fancy ---- */
+body { background: radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%), var(--bg); background-attachment: fixed; }
+.logo { width: 48px; height: 48px; display: grid; place-items: center; font-size: 1.8rem; border-radius: 50%; background: radial-gradient(circle at 30% 25%, var(--surface), var(--tint)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent), 0 6px 14px rgba(31,95,224,.25); }
+.brand { gap: 10px; }
+.brand .bk { background: linear-gradient(135deg, var(--blue1), var(--blue2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* hero: gloss, glow, bubbles, floating glass, moving wave */
+.hero { background:
+    radial-gradient(60% 90% at 100% 0%, rgba(255,255,255,.38), transparent 60%),
+    radial-gradient(14px 14px at 12% 78%, rgba(255,255,255,.22), transparent 70%),
+    radial-gradient(9px 9px at 38% 12%, rgba(255,255,255,.20), transparent 70%),
+    radial-gradient(18px 18px at 62% 70%, rgba(255,255,255,.14), transparent 70%),
+    radial-gradient(7px 7px at 88% 55%, rgba(255,255,255,.25), transparent 70%),
+    linear-gradient(135deg, var(--blue1), var(--blue2)); box-shadow: 0 14px 34px rgba(26,79,209,.35), inset 0 1px 0 rgba(255,255,255,.35); }
+.hero .big { text-shadow: 0 3px 16px rgba(0,30,120,.35); }
+.hero:not(.hero-w)::before { animation: floaty 4.5s ease-in-out infinite; }
+.hero::after { animation: wave 6s linear infinite; }
+@keyframes floaty { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-7px) rotate(3deg); } }
+@keyframes wave { to { -webkit-mask-position: 120px bottom; mask-position: 120px bottom; } }
+
+/* cards: lift in, glossy edge, icon chips */
+.view > * { animation: rise .55s cubic-bezier(.2,.8,.2,1) both; }
+.view > *:nth-child(2) { animation-delay: .05s; } .view > *:nth-child(3) { animation-delay: .1s; }
+.view > *:nth-child(4) { animation-delay: .15s; } .view > *:nth-child(5) { animation-delay: .2s; } .view > *:nth-child(n+6) { animation-delay: .25s; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+.card { border-color: color-mix(in srgb, var(--accent) 14%, var(--line)); box-shadow: var(--shadow), inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent); }
+.card h2 > .em, .shift-title > .em { display: inline-grid !important; place-items: center; width: 1.9em; height: 1.9em; font-size: 1.15rem; margin-right: 8px; border-radius: 12px; vertical-align: middle;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), color-mix(in srgb, var(--accent) 6%, var(--surface))); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent); }
+.shift-title { display: flex; align-items: center; }
+.shift-title > .em { width: 1.7em; height: 1.7em; font-size: 1rem; }
+
+/* controls */
+.btn:not(.ghost):not(.soft) { box-shadow: 0 8px 18px rgba(31,95,224,.35), inset 0 1px 0 rgba(255,255,255,.4); transition: transform .12s, box-shadow .12s; }
+.btn:active { transform: scale(.97); box-shadow: 0 3px 8px rgba(31,95,224,.3); }
+.input-wrap input { transition: border-color .15s, box-shadow .15s; }
+.input-wrap input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent); }
+.day { transition: transform .12s, box-shadow .12s; }
+.day:active { transform: scale(.985); }
+.stat { box-shadow: 0 2px 8px rgba(20,60,140,.06); }
+.hint { background: linear-gradient(90deg, var(--tint), color-mix(in srgb, var(--tint) 40%, var(--surface))); }
+.bigfig.pos { background: linear-gradient(135deg, var(--good), color-mix(in srgb, var(--good) 55%, var(--blue1))); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+
+/* ---- sign in + reports (GitHub version) ---- */
+.locked .app, .locked .tabs { display: none; }
+.gate { position: fixed; inset: 0; z-index: 50; display: none; place-items: center; padding: 20px; background: radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%), var(--bg); }
+.locked .gate { display: grid; }
+.gate-card { width: 100%; max-width: 380px; display: grid; gap: 14px; text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: 26px; padding: 28px 22px; box-shadow: var(--shadow); }
+.gate-card h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.7rem; letter-spacing: -.02em; }
+.gate-card .bk { color: var(--accent); }
+.gate-card p { margin: 0; color: var(--muted); font-size: .92rem; }
+.gate-card .logo { margin: 0 auto; width: 64px; height: 64px; font-size: 2.4rem; }
+.gate-card .field { text-align: left; }
+.gate-card .input-wrap input { padding: 0 14px; font-size: 1rem; }
+.gate-card form { display: grid; gap: 14px; }
+#gate-load { color: var(--muted); font-weight: 600; padding: 12px 0; }
+.rep-grid { display: grid; gap: 12px; }
+.input-wrap input[type="month"] { padding-right: 14px; }
+
+/* floating glass tab bar */
+.tabs { left: 50%; right: auto; transform: translateX(-50%); width: calc(100% - 24px); max-width: 496px; bottom: calc(10px + env(safe-area-inset-bottom)); border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); border-radius: 28px; padding: 6px 8px;
+  background: color-mix(in srgb, var(--surface) 78%, transparent); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); box-shadow: 0 12px 30px rgba(10,40,120,.28); }
+.tab { transition: background .2s, transform .12s; }
+.tab:active { transform: scale(.94); }
+.tab[aria-selected="true"] { background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 26%, var(--surface)), color-mix(in srgb, var(--accent) 10%, var(--surface))); box-shadow: 0 4px 12px rgba(31,95,224,.25), inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); }
+.app { padding-bottom: 112px; }
+.toast { bottom: 104px; }
+@media (prefers-reduced-motion: reduce) { .hero::before, .hero::after, .view > * { animation: none !important; } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">🐄</span>      Maziwa <span class="bk">Book</span> 
+    </div>
+    <span class="sync" id="sync">Starting…</span>
+  </header>
+
+  <!-- TODAY -->
+  <main id="view-today" class="view">
+    <div class="dayline">
+      <div><span class="nm" id="day-name">Today</span><span class="sub" id="day-sub">Today</span></div>
+      <button class="btn mini soft" id="back-today" type="button" hidden>Back to today</button>
+    </div>
+
+    <section class="hero" aria-live="polite">
+      <div class="label" id="hero-label"><span class="em">🥛</span> Milk sold today</div>
+      <div class="big" id="hero-big">0 L</div>
+      <div class="row">
+        <div><span><span class="em">🚚</span> Milk in</span><b id="hero-in">0 L</b></div>
+        <div><span><span class="em">🥛</span> Fresh sold</span><b id="hero-fresh">0 L</b></div>
+        <div><span><span class="em">🍶</span> Maziwa lala</span><b id="hero-lala">0 L</b></div>
+      </div>
+      <div class="row">
+        <div><span><span class="em">🥚</span> Trays in</span><b id="hero-ein">0</b></div>
+        <div><span><span class="em">💵</span> Trays sold</span><b id="hero-esold">0</b></div>
+        <div><span><span class="em">📦</span> Trays left</span><b id="hero-eleft">0</b></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="em">🥛</span> Milk <span class="pill" id="mode-pill" hidden>Saved</span></h2>
+      <div class="shiftbox">
+        <div class="shift-title"><span class="em">☀️</span> Morning</div>
+        <div class="shift3">
+          <div class="field"><label for="f-in-am">Milk in (L)</label><div class="input-wrap compact"><input id="f-in-am" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <div class="field"><label for="f-buy-am">Buy (KSh)</label><div class="input-wrap compact"><input id="f-buy-am" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <div class="field"><label for="f-sell-am">Sell (KSh)</label><div class="input-wrap compact"><input id="f-sell-am" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <button class="btn mini" id="rec-am" type="button">Record</button>
+        </div>
+        <div class="soldrow">
+          <div class="field"><label for="f-sold-am">Milk sold (L)</label><div class="input-wrap compact"><input id="f-sold-am" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <button class="btn mini" id="recs-am" type="button">Record sold</button>
+        </div>
+      </div>
+      <div class="shiftbox">
+        <div class="shift-title"><span class="em">🌙</span> Evening</div>
+        <div class="shift3">
+          <div class="field"><label for="f-in-pm">Milk in (L)</label><div class="input-wrap compact"><input id="f-in-pm" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <div class="field"><label for="f-buy-pm">Buy (KSh)</label><div class="input-wrap compact"><input id="f-buy-pm" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <div class="field"><label for="f-sell-pm">Sell (KSh)</label><div class="input-wrap compact"><input id="f-sell-pm" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <button class="btn mini" id="rec-pm" type="button">Record</button>
+        </div>
+        <div class="soldrow">
+          <div class="field"><label for="f-sold-pm">Milk sold (L)</label><div class="input-wrap compact"><input id="f-sold-pm" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <button class="btn mini" id="recs-pm" type="button">Record sold</button>
+        </div>
+      </div>
+      <div class="hint"><span><span class="em">📥</span> Brought from yesterday</span><b id="carry">0 L</b></div>
+      <div class="hint"><span><span class="em">📦</span> In stock after sales</span><b id="stock-now">0 L</b></div>
+      <div id="warn-sold" class="warn" hidden>Milk sold is more than the milk you had. Check the litres.</div>
+      <div class="hint"><span>Record milk in when it arrives and milk sold as you sell. The left over works itself out.</span></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="em">🍶</span> Maziwa lala</h2>
+      <div class="shiftbox">
+        <div class="shift-title">Made from left over</div>
+        <div class="row3">
+          <div class="field"><label for="f-lala">Made (L)</label><div class="input-wrap compact"><input id="f-lala" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <div class="field"><label for="f-lprice">Sell (KSh) per L</label><div class="input-wrap compact"><input id="f-lprice" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <button class="btn mini" id="rec-lala" type="button">Record</button>
+        </div>
+        <div class="soldrow">
+          <div class="field"><label for="f-lala-sold">Lala sold (L)</label><div class="input-wrap compact"><input id="f-lala-sold" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <button class="btn mini" id="recs-lala" type="button">Record sold</button>
+        </div>
+      </div>
+      <div class="hint"><span><span class="em">🍶</span> Lala in stock</span><b id="lala-left">0 L</b></div>
+      <div class="hint"><span><span class="em">🌅</span> Milk left over for tomorrow</span><b id="carry-out">0 L</b></div>
+      <div id="warn-lala" class="warn" hidden>Check the litres.</div>
+    </section>
+
+    <section class="card">
+      <h2><span class="em">🥚</span> Egg trays</h2>
+      <div class="shiftbox">
+        <div class="row3">
+          <div class="field"><label for="f-egg-in">Trays in</label><div class="input-wrap compact"><input id="f-egg-in" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <div class="field"><label for="f-egg-buy">Buy (KSh)</label><div class="input-wrap compact"><input id="f-egg-buy" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <div class="field"><label for="f-egg-sell">Sell (KSh)</label><div class="input-wrap compact"><input id="f-egg-sell" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <button class="btn mini" id="rec-egg" type="button">Record</button>
+        </div>
+        <div class="soldrow">
+          <div class="field"><label for="f-egg-sold">Trays sold</label><div class="input-wrap compact"><input id="f-egg-sold" inputmode="decimal" placeholder="0" autocomplete="off"></div></div>
+          <button class="btn mini" id="recs-egg" type="button">Record sold</button>
+        </div>
+      </div>
+      <div class="hint"><span>Trays left</span><b id="egg-left">0</b></div>
+      <div id="warn-egg" class="warn" hidden>Trays sold is more than the trays you had.</div>
+    </section>
+
+    <div class="actions">
+      <button class="btn" id="save" type="button" hidden>Update day</button>
+      <button class="btn soft" id="edit-today" type="button" hidden><span class="em">✏️</span> Edit today's totals</button>
+    </div>
+
+    <section class="card" id="hist-card">
+      <h2><span class="em">📊</span> History <button class="btn mini soft" id="hist-toggle" type="button">Hide</button></h2>
+      <div id="hist-body" style="display:grid;gap:14px">
+        <div class="chips small" role="group" aria-label="What to show" data-for="metric">
+          <button class="chip" type="button" data-v="profit" aria-pressed="true">Profit</button>
+          <button class="chip" type="button" data-v="litres" aria-pressed="false">Litres</button>
+          <button class="chip" type="button" data-v="eggs" aria-pressed="false">Eggs</button>
+          <button class="chip" type="button" data-v="costs" aria-pressed="false">Expenses</button>
+        </div>
+        <div class="chips small" role="group" aria-label="Period" data-for="period">
+          <button class="chip" type="button" data-v="day" aria-pressed="true">Daily</button>
+          <button class="chip" type="button" data-v="week" aria-pressed="false">Weekly</button>
+          <button class="chip" type="button" data-v="month" aria-pressed="false">Monthly</button>
+        </div>
+        <div id="hist" style="display:grid;gap:12px"></div>
+        <div class="sect" id="hist-title">Recent days</div>
+        <div class="list" id="hist-list"></div>
+        <button class="btn mini soft" id="hist-more" type="button" hidden style="justify-self:center">Show more days</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- WALLET -->
+  <main id="view-wallet" class="view" hidden>
+    <div class="walletrow">
+      <section class="hero hero-w">
+        <div class="label"><span class="em">💰</span> Wallet balance</div>
+        <div class="big" id="w-balance">0</div>
+        <div class="row">
+          <div><span><span class="em">💵</span> Collected</span><b id="w-coll">0</b></div>
+          <div><span><span class="em">🛒</span> Bought</span><b id="w-paid">0</b></div>
+          <div><span><span class="em">🧾</span>Expenses</span><b id="w-costs">0</b></div>
+        </div>
+      </section>
+      <section class="card open-card" id="open-card">
+        <div class="label"><span class="em">🏦</span> Starting balance</div>
+        <div class="field">
+          <label for="f-open" class="sr">Amount (KSh)</label>
+          <div class="input-wrap compact"><input id="f-open" inputmode="decimal" placeholder="KSh 0" autocomplete="off"></div>
+        </div>
+        <button class="btn" id="set-open" type="button" style="height:46px">Set</button>
+        <button class="oplink" id="open-toggle" type="button">History</button>
+      </section>
+    </div>
+    <section class="card" id="open-panel" hidden>
+      <h2><span class="em">🏦</span> Starting balance history</h2>
+      <div class="list" id="open-log"></div>
+    </section>
+    <section class="card">
+      <h2><span class="em">📈</span> Profit <small id="p-day">Today</small></h2>
+      <div class="bigfig" id="p-profit">0</div>
+      <div class="grid2">
+        <div class="stat"><span><span class="em">🥛</span> Milk profit</span><b id="p-milk">0</b></div>
+        <div class="stat"><span><span class="em">🥚</span> Egg profit</span><b id="p-egg">0</b></div>
+        <div class="stat"><span><span class="em">💵</span> Money collected</span><b id="p-coll">0</b></div>
+        <div class="stat"><span><span class="em">🧾</span>Expenses</span><b id="p-exp">0</b></div>
+      </div>
+    </section>
+    <div class="grid2">
+      <div class="stat"><span><span class="em">🥛</span> Milk stock</span><b id="w-stock">0 L</b></div>
+      <div class="stat"><span><span class="em">🥚</span> Egg trays</span><b id="w-estock">0</b></div>
+    </div>
+
+    <section class="card">
+      <h2><span class="em">🧾</span> Expenses <small id="exp-day">Today</small></h2>
+      <div class="field">
+        <label for="f-rent"><span class="em">🏠</span> Rent (KSh)</label>
+        <div class="input-wrap"><input id="f-rent" inputmode="decimal" placeholder="0" autocomplete="off"></div>
+      </div>
+      <div class="field">
+        <label for="f-elec"><span class="em">💡</span> Electricity (KSh)</label>
+        <div class="input-wrap"><input id="f-elec" inputmode="decimal" placeholder="0" autocomplete="off"></div>
+      </div>
+      <div class="field">
+        <label for="f-pap"><span class="em">📰</span> Papers bought (KSh)</label>
+        <div class="input-wrap"><input id="f-pap" inputmode="decimal" placeholder="0" autocomplete="off"></div>
+      </div>
+      <div class="hint"><span><span class="em">🗓️</span> Spent this month</span><b id="exp-month">0</b></div>
+      <button class="btn" id="save-exp" type="button"><span class="em">🧾</span> Save expenses</button>
+    </section>
+    <h3 class="sect"><span class="em">📒</span> Cash book</h3>
+    <div class="list" id="cashbook"></div>
+  </main>
+
+  <!-- REPORTS -->
+  <main id="view-reports" class="view" hidden>
+    <section class="card">
+      <h2><span class="em">📑</span> Excel report</h2>
+      <div class="chips" role="group" aria-label="Report period" id="rep-chips">
+        <button class="chip" type="button" data-v="month" aria-pressed="true">Monthly</button>
+        <button class="chip" type="button" data-v="year" aria-pressed="false">Yearly</button>
+      </div>
+      <div class="field" id="rep-month-f"><label for="rep-month">Month</label><div class="input-wrap"><input id="rep-month" type="month"></div></div>
+      <div class="field" id="rep-year-f" hidden><label for="rep-year">Year</label><div class="input-wrap"><input id="rep-year" inputmode="numeric" maxlength="4" placeholder="2026" autocomplete="off"></div></div>
+      <div class="hint"><span id="rep-note">Pick a period to see the totals.</span></div>
+      <div class="bigfig" id="rp-profit">0</div>
+      <div class="grid2">
+        <div class="stat"><span><span class="em">🥛</span> Milk sold</span><b id="rp-sold">0 L</b></div>
+        <div class="stat"><span><span class="em">💵</span> Money collected</span><b id="rp-coll">0</b></div>
+        <div class="stat"><span><span class="em">🛒</span> Stock bought</span><b id="rp-paid">0</b></div>
+        <div class="stat"><span><span class="em">🧾</span> Expenses</span><b id="rp-exp">0</b></div>
+      </div>
+      <button class="btn" id="rep-dl" type="button"><span class="em">📥</span> Download Excel</button>
+    </section>
+    <section class="card">
+      <h2><span class="em">👤</span> Account</h2>
+      <div class="hint"><span>Signed in as</span><b id="acct" style="overflow-wrap:anywhere;text-align:right"></b></div>
+      <button class="btn ghost" id="signout" type="button">Sign out</button>
+    </section>
+  </main>
+
+</div>
+
+<nav class="tabs" aria-label="Main">
+  <div class="tabs-in" role="tablist">
+    <button class="tab" role="tab" data-tab="today" aria-selected="true" type="button">
+      <span class="ti">🥛</span>Today</button>
+    <button class="tab" role="tab" data-tab="wallet" aria-selected="false" type="button">
+      <span class="ti">💰</span>Wallet</button>
+    <button class="tab" role="tab" data-tab="reports" aria-selected="false" type="button">
+      <span class="ti">📑</span>Reports</button>
+  </div>
+</nav>
+<div class="toast" id="toast" role="status"></div>
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="logo" aria-hidden="true">🐄</div>
+    <h1>Maziwa <span class="bk">Book</span></h1>
+    <div id="gate-load">Opening…</div>
+    <form id="login" hidden>
+      <p>Sign in to open your books.</p>
+      <div class="field"><label for="lg-email">Email</label><div class="input-wrap"><input id="lg-email" type="email" autocomplete="username" autocapitalize="none" required></div></div>
+      <div class="field"><label for="lg-pass">Password</label><div class="input-wrap"><input id="lg-pass" type="password" autocomplete="current-password" required></div></div>
+      <div id="lg-err" class="warn" hidden></div>
+      <button class="btn" id="lg-btn" type="submit">Sign in</button>
+    </form>
+  </div>
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var entries = {};            // dateKey -> saved day
+  var opening = 0;             // starting wallet balance
+  var openLog = [];            // history of starting balance changes: {t, to, from}
+  var store = null, wdoc = null;
+  var editingKey = null;       // null = today (automatic)
+  var hist = { metric: "profit", period: "day", more: 7, open: true };
+  var armed = false, armTimer = null, lastToday = "";
+
+  /* ---------- helpers ---------- */
+  var KEY = /^\d{4}-\d{2}-\d{2}$/;
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function keyOf(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function todayKey() { return keyOf(new Date()); }
+  function parseKey(k) { var p = k.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function daysAgoKey(n) { var d = new Date(); d.setDate(d.getDate() - n); return keyOf(d); }
+  function dayLabel(k) { return parseKey(k).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }); }
+  function num(v) { var n = parseFloat(String(v == null ? "" : v).replace(",", ".")); return isFinite(n) ? n : 0; }
+  function money(n) { var r = Math.round(n); return (r < 0 ? "-" : "") + Math.abs(r).toLocaleString("en-US"); }
+  function ksh(n) { var r = Math.round(n); return (r < 0 ? "-" : "") + "KSh " + Math.abs(r).toLocaleString("en-US"); }
+  function litres(n) { var r = Math.round(n * 10) / 10; return r.toLocaleString("en-US", { maximumFractionDigits: 1 }) + " L"; }
+  function trays(n) { return String(Math.round(n * 10) / 10); }
+  function sgn(n) { return n > 0 ? "pos" : n < 0 ? "neg" : ""; }
+  function wavg(a, wa, b, wb) {
+    var w = wa + wb;
+    if (w > 0) return (a * wa + b * wb) / w;
+    var n = (a > 0 ? 1 : 0) + (b > 0 ? 1 : 0);
+    return n ? (a + b) / n : 0;
+  }
+  function clean(o) {
+    var am = o.inAm != null ? num(o.inAm) : num(o.milkIn), pm = num(o.inPm);
+    var bAm = o.buyAm != null ? num(o.buyAm) : num(o.buy), bPm = o.buyPm != null ? num(o.buyPm) : num(o.buy);
+    var sAm = o.sellAm != null ? num(o.sellAm) : num(o.sell), sPm = o.sellPm != null ? num(o.sellPm) : num(o.sell);
+    return { inAm: am, inPm: pm, milkIn: am + pm, buyAm: bAm, buyPm: bPm, sellAm: sAm, sellPm: sPm,
+      buy: wavg(bAm, am, bPm, pm), sell: wavg(sAm, am, sPm, pm), remaining: num(o.remaining), open: !!o.open, soldAm: num(o.soldAm), soldPm: num(o.soldPm), legacy: o.soldAm == null && o.soldPm == null,
+      lala: num(o.lala), lalaSold: num(o.lalaSold), lalaLegacy: o.lalaSold == null, lalaPrice: num(o.lalaPrice), rent: num(o.rent), elec: num(o.elec), papers: num(o.papers),
+      eggIn: num(o.eggIn), eggBuy: num(o.eggBuy), eggSold: num(o.eggSold), eggSell: num(o.eggSell) };
+  }
+  function toast(msg) {
+    var t = $("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast.t); toast.t = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+  function curKey() { return editingKey || todayKey(); }
+
+  /* ---------- the maths ---------- */
+  function sortedKeys() { return Object.keys(entries).filter(function (k) { return KEY.test(k); }).sort(); }
+  function calc(e, carry, eCarry, lCarry) {
+    lCarry = lCarry || 0;
+    var lsq = e.lalaLegacy ? e.lala : e.lalaSold;
+    var costs = e.rent + e.elec + e.papers, milkPaid = e.milkIn * e.buy;
+    var eggPaid = e.eggIn * e.eggBuy, eggColl = e.eggSold * e.eggSell, eggProfit = e.eggSold * (e.eggSell - e.eggBuy);
+    var open = e.legacy && e.open && (e.milkIn > 0 || carry > 0);   // only days saved with the old left-over form
+    var r = { open: open, costs: costs, milkPaid: milkPaid, eggPaid: eggPaid, eggColl: eggColl, eggProfit: eggProfit,
+              eggOut: (eCarry || 0) + e.eggIn - e.eggSold, lala: 0, lalaMade: e.lala, lalaOut: lCarry + e.lala - lsq };
+    if (open) {
+      r.fresh = 0; r.sold = 0; r.milkColl = 0; r.milkProfit = 0; r.lalaOut = lCarry + e.lala; r.out = carry + e.milkIn; r.stock = r.out;
+    } else if (e.legacy) {
+      r.fresh = e.milkIn + carry - e.remaining; r.lala = lsq; r.sold = r.fresh + lsq;
+      r.milkColl = r.fresh * e.sell + lsq * e.lalaPrice;
+      r.milkProfit = r.fresh * (e.sell - e.buy) + lsq * (e.lalaPrice - e.buy);
+      r.out = e.remaining - e.lala; r.stock = e.remaining;
+    } else {
+      r.fresh = e.soldAm + e.soldPm; r.lala = lsq; r.sold = r.fresh + lsq;
+      r.milkColl = e.soldAm * e.sellAm + e.soldPm * e.sellPm + lsq * e.lalaPrice;
+      r.milkProfit = e.soldAm * (e.sellAm - e.buy) + e.soldPm * (e.sellPm - e.buy) + lsq * (e.lalaPrice - e.buy);
+      r.stock = carry + e.milkIn - r.fresh; r.out = r.stock - e.lala;
+    }
+    r.coll = r.milkColl + eggColl; r.paid = milkPaid + eggPaid;
+    r.profit = r.milkProfit + eggProfit - costs; r.cash = r.coll - r.paid - costs;
+    return r;
+  }
+  function allDays() {
+    var carry = 0, eCarry = 0, lCarry = 0;
+    return sortedKeys().map(function (k) {
+      var e = clean(entries[k]), c = calc(e, carry, eCarry, lCarry), d = { key: k, e: e, c: c };
+      carry = Math.max(0, c.out); eCarry = Math.max(0, c.eggOut); lCarry = Math.max(0, c.lalaOut);
+      return d;
+    });
+  }
+  function carriesFor(key) {
+    var m = 0, g = 0, l = 0;
+    allDays().forEach(function (d) { if (d.key < key) { m = Math.max(0, d.c.out); g = Math.max(0, d.c.eggOut); l = Math.max(0, d.c.lalaOut); } });
+    return { m: m, g: g, l: l };
+  }
+  function carryFor(key) { return carriesFor(key).m; }
+  function inRange(days, r) {
+    if (!r) return days;
+    var cut = daysAgoKey(r - 1);
+    return days.filter(function (d) { return d.key >= cut; });
+  }
+
+  /* ---------- Today form ---------- */
+  var F = { buyAm: $("f-buy-am"), sellAm: $("f-sell-am"), buyPm: $("f-buy-pm"), sellPm: $("f-sell-pm"),
+            am: $("f-in-am"), pm: $("f-in-pm"), sAm: $("f-sold-am"), sPm: $("f-sold-pm"), lala: $("f-lala"), lSold: $("f-lala-sold"), lprice: $("f-lprice"),
+            egIn: $("f-egg-in"), egBuy: $("f-egg-buy"), egSold: $("f-egg-sold"), egSell: $("f-egg-sell"),
+            rent: $("f-rent"), elec: $("f-elec"), pap: $("f-pap") };
+  function formData() {
+    return { buyAm: F.buyAm.value, sellAm: F.sellAm.value, buyPm: F.buyPm.value, sellPm: F.sellPm.value,
+             inAm: F.am.value, inPm: F.pm.value, soldAm: F.sAm.value, soldPm: F.sPm.value,
+             lala: F.lala.value, lalaSold: F.lSold.value, lalaPrice: F.lprice.value,
+             eggIn: F.egIn.value, eggBuy: F.egBuy.value, eggSold: F.egSold.value, eggSell: F.egSell.value,
+             rent: F.rent.value, elec: F.elec.value, papers: F.pap.value };
+  }
+  function setVal(el, v) { el.value = v ? String(v) : ""; }
+  function lastPrices(before) {
+    var p = { buyAm: 0, sellAm: 0, buyPm: 0, sellPm: 0, lalaPrice: 0, eggBuy: 0, eggSell: 0 }, ks = sortedKeys();
+    for (var i = 0; i < ks.length; i++) {
+      if (ks[i] < before) {
+        var e = clean(entries[ks[i]]);
+        p.buyAm = e.buyAm || p.buyAm; p.sellAm = e.sellAm || p.sellAm; p.buyPm = e.buyPm || p.buyPm; p.sellPm = e.sellPm || p.sellPm;
+        p.lalaPrice = e.lalaPrice || p.lalaPrice; p.eggBuy = e.eggBuy || p.eggBuy; p.eggSell = e.eggSell || p.eggSell;
+      }
+    }
+    return p;
+  }
+  function round2(x) { return Math.round(x * 100) / 100; }
+  function loadDate() {
+    var key = curKey(), e = entries[key];
+    if (e && editingKey) {
+      var c = clean(e), sAm = c.soldAm, sPm = c.soldPm;
+      if (c.legacy) {   // a day saved with the old left-over form: show it as litres sold per shift
+        var fresh = c.open ? 0 : Math.max(0, c.milkIn + carryFor(key) - c.remaining);
+        sAm = c.milkIn > 0 ? fresh * c.inAm / c.milkIn : fresh; sPm = fresh - sAm;
+      }
+      setVal(F.buyAm, c.buyAm); setVal(F.sellAm, c.sellAm); setVal(F.buyPm, c.buyPm); setVal(F.sellPm, c.sellPm);
+      setVal(F.am, c.inAm); setVal(F.pm, c.inPm); setVal(F.sAm, round2(sAm)); setVal(F.sPm, round2(sPm));
+      setVal(F.lala, c.lala); setVal(F.lSold, c.lalaLegacy ? c.lala : c.lalaSold); setVal(F.lprice, c.lalaPrice);
+      setVal(F.egIn, c.eggIn); setVal(F.egBuy, c.eggBuy); setVal(F.egSold, c.eggSold); setVal(F.egSell, c.eggSell);
+      setVal(F.rent, c.rent); setVal(F.elec, c.elec); setVal(F.pap, c.papers);
+    } else {
+      var p = lastPrices(key);
+      if (e) { var b0 = clean(e); p.buyAm = b0.buyAm || p.buyAm; p.sellAm = b0.sellAm || p.sellAm; p.buyPm = b0.buyPm || p.buyPm; p.sellPm = b0.sellPm || p.sellPm; p.lalaPrice = b0.lalaPrice || p.lalaPrice; p.eggBuy = b0.eggBuy || p.eggBuy; p.eggSell = b0.eggSell || p.eggSell; }
+      F.am.value = ""; F.pm.value = ""; F.sAm.value = ""; F.sPm.value = ""; F.lala.value = ""; F.lSold.value = "";
+      F.egIn.value = ""; F.egSold.value = ""; F.rent.value = ""; F.elec.value = ""; F.pap.value = "";
+      setVal(F.buyAm, p.buyAm); setVal(F.sellAm, p.sellAm); setVal(F.buyPm, p.buyPm); setVal(F.sellPm, p.sellPm);
+      setVal(F.lprice, p.lalaPrice); setVal(F.egBuy, p.eggBuy); setVal(F.egSell, p.eggSell);
+    }
+    disarm(); refreshForm();
+  }
+  function savedBase(key) { return entries[key] ? clean(entries[key]) : clean({ soldAm: 0, soldPm: 0, lalaSold: 0 }); }
+  function wp(oa, ow, na, nw) { var w = ow + nw; return w > 0 ? Math.round((oa * ow + na * nw) / w * 100) / 100 : (na || oa); }
+  function mergeDay(b, t, need) {
+    var m = {}; for (var k in b) m[k] = b[k];
+    var bls = b.lalaLegacy ? b.lala : b.lalaSold;
+    m.lalaSold = bls; m.lalaLegacy = false;
+    if (need === "am") { m.buyAm = wp(b.buyAm, b.inAm, t.buyAm, t.inAm); m.inAm = b.inAm + t.inAm; if (!(b.soldAm > 0)) m.sellAm = t.sellAm; }
+    if (need === "pm") { m.buyPm = wp(b.buyPm, b.inPm, t.buyPm, t.inPm); m.inPm = b.inPm + t.inPm; if (!(b.soldPm > 0)) m.sellPm = t.sellPm; }
+    if (need === "amSold") { m.sellAm = wp(b.sellAm, b.soldAm, t.sellAm, t.soldAm); m.soldAm = b.soldAm + t.soldAm; if (!(b.inAm > 0)) m.buyAm = t.buyAm; }
+    if (need === "pmSold") { m.sellPm = wp(b.sellPm, b.soldPm, t.sellPm, t.soldPm); m.soldPm = b.soldPm + t.soldPm; if (!(b.inPm > 0)) m.buyPm = t.buyPm; }
+    if (need === "lala") { m.lala = b.lala + t.lala; if (!(bls > 0)) m.lalaPrice = t.lalaPrice; }
+    if (need === "lalaSold") { m.lalaPrice = wp(b.lalaPrice, bls, t.lalaPrice, t.lalaSold); m.lalaSold = bls + t.lalaSold; }
+    if (need === "egg") { m.eggBuy = wp(b.eggBuy, b.eggIn, t.eggBuy, t.eggIn); m.eggIn = b.eggIn + t.eggIn; if (!(b.eggSold > 0)) m.eggSell = t.eggSell; }
+    if (need === "eggSold") { m.eggSell = wp(b.eggSell, b.eggSold, t.eggSell, t.eggSold); m.eggSold = b.eggSold + t.eggSold; if (!(b.eggIn > 0)) m.eggBuy = t.eggBuy; }
+    if (need === "exp") { m.rent = b.rent + t.rent; m.elec = b.elec + t.elec; m.papers = b.papers + t.papers; }
+    return clean(m);
+  }
+  function resetAfter(need, m) {
+    var z = { am: [F.am], pm: [F.pm], amSold: [F.sAm], pmSold: [F.sPm], lala: [F.lala], lalaSold: [F.lSold], egg: [F.egIn], eggSold: [F.egSold], exp: [F.rent, F.elec, F.pap] }[need] || [];
+    z.forEach(function (el) { el.value = ""; });
+    if (need === "am" || need === "amSold") { setVal(F.buyAm, m.buyAm); setVal(F.sellAm, m.sellAm); }
+    if (need === "pm" || need === "pmSold") { setVal(F.buyPm, m.buyPm); setVal(F.sellPm, m.sellPm); }
+    if (need === "lala" || need === "lalaSold") setVal(F.lprice, m.lalaPrice);
+    if (need === "egg" || need === "eggSold") { setVal(F.egBuy, m.eggBuy); setVal(F.egSell, m.eggSell); }
+  }
+  function refreshForm() {
+    var key = curKey(), saved = !!entries[key], isToday = !editingKey;
+    var live = !editingKey;
+    var cs = carriesFor(key), e = live ? savedBase(key) : clean(formData()), c = calc(e, cs.m, cs.g, cs.l);
+    var when = isToday ? "Today" : dayLabel(key);
+    $("day-name").textContent = dayLabel(key);
+    $("exp-day").textContent = when;
+    $("p-day").textContent = when + (c.open ? " · so far" : "");
+    $("day-sub").textContent = (isToday ? "Today" : (key === todayKey() ? "Editing today's totals" : "Editing a past day")) + (c.open ? " · day open" : "");
+    $("back-today").hidden = isToday;
+    $("mode-pill").hidden = !saved; $("mode-pill").textContent = "Saved";
+    $("save").hidden = live; $("edit-today").hidden = !(live && saved);
+    $("save").innerHTML = '<span class="em">💾</span>Update day';
+    $("carry").textContent = litres(cs.m);
+    $("carry-out").textContent = litres(Math.max(0, c.out)); $("lala-left").textContent = litres(Math.max(0, c.lalaOut));
+    $("stock-now").textContent = litres(Math.max(0, c.stock));
+    // Today shows milk and egg quantities
+    $("hero-label").innerHTML = '<span class="em">🥛</span>' + (isToday ? "Milk sold today" : "Milk sold " + dayLabel(key)) + (c.open ? " · day open" : "");
+    $("hero-big").textContent = litres(Math.max(c.sold, 0));
+    $("hero-in").textContent = litres(e.milkIn);
+    $("hero-fresh").textContent = litres(Math.max(c.fresh, 0));
+    $("hero-lala").textContent = litres(c.lala);
+    var left = Math.max(0, c.eggOut);
+    $("hero-ein").textContent = trays(e.eggIn); $("hero-esold").textContent = trays(e.eggSold); $("hero-eleft").textContent = trays(left);
+    $("egg-left").textContent = trays(left);
+    // Wallet shows the money for the same day
+    $("p-profit").textContent = ksh(c.profit); $("p-profit").className = "bigfig " + sgn(c.profit);
+    $("p-milk").textContent = ksh(c.milkProfit); $("p-egg").textContent = ksh(c.eggProfit);
+    $("p-coll").textContent = ksh(c.coll); $("p-exp").textContent = ksh(c.costs);
+    $("warn-sold").hidden = !(c.stock < -0.0001);
+    var wl = $("warn-lala");
+    if (c.out < -0.0001 && c.stock >= -0.0001) { wl.textContent = "Maziwa lala made is more than the left over milk."; wl.hidden = false; }
+    else if (c.lalaOut < -0.0001) { wl.textContent = "Lala sold is more than the lala you have."; wl.hidden = false; }
+    else wl.hidden = true;
+    $("warn-egg").hidden = !(c.eggOut < -0.0001);
+  }
+  Object.keys(F).forEach(function (k) { F[k].addEventListener("input", function () { disarm(); refreshForm(); }); });
+  $("back-today").addEventListener("click", function () { editingKey = null; loadDate(); });
+
+  function persist(key, data) {
+    if (store) return store.doc(key).set(data);
+    entries[key] = data; saveLocal(); return Promise.resolve();
+  }
+  function remove(key) {
+    if (store) return store.doc(key).delete();
+    delete entries[key]; saveLocal(); return Promise.resolve();
+  }
+  function saveLocal() {
+    try { localStorage.setItem("maziwa-days", JSON.stringify(entries)); localStorage.setItem("maziwa-opening", String(opening)); localStorage.setItem("maziwa-openlog", JSON.stringify(openLog)); } catch (e) {}
+  }
+
+  function doSave(message, need) {
+    var key = curKey(), live = !editingKey, d = clean(formData()), cs = carriesFor(key), m, c;
+    function stop(msg, el) { toast(msg); if (el) el.focus(); }
+    if (need === "exp" && d.rent + d.elec + d.papers <= 0) return stop("Type an amount first.", F.rent);
+    if (need === "egg" && d.eggIn <= 0) return stop("Type the trays in first.", F.egIn);
+    if (need === "egg" && d.eggBuy <= 0) return stop("Add the egg buying price first.", F.egBuy);
+    if (need === "eggSold" && d.eggSold <= 0) return stop("Type the trays sold first.", F.egSold);
+    if (need === "eggSold" && d.eggSell <= 0) return stop("Add the egg selling price first.", F.egSell);
+    if (need === "am" || need === "pm") {
+      var q = need === "am" ? "morning" : "evening";
+      var inn = need === "am" ? d.inAm : d.inPm, buy = need === "am" ? d.buyAm : d.buyPm;
+      if (inn <= 0) return stop("Type the " + q + " milk in first.", need === "am" ? F.am : F.pm);
+      if (buy <= 0) return stop("Add the " + q + " buying price first.", need === "am" ? F.buyAm : F.buyPm);
+    }
+    if (need === "amSold" || need === "pmSold") {
+      var q2 = need === "amSold" ? "morning" : "evening";
+      var sold = need === "amSold" ? d.soldAm : d.soldPm, sell = need === "amSold" ? d.sellAm : d.sellPm;
+      if (sold <= 0) return stop("Type the " + q2 + " milk sold first.", need === "amSold" ? F.sAm : F.sPm);
+      if (sell <= 0) return stop("Add the " + q2 + " selling price first.", need === "amSold" ? F.sellAm : F.sellPm);
+    }
+    if (need === "lala" && d.lala <= 0) return stop("Type the maziwa lala litres first.", F.lala);
+    if (need === "lalaSold" && d.lalaSold <= 0) return stop("Type the lala sold first.", F.lSold);
+    if ((need === "lalaSold") && d.lalaPrice <= 0) return stop("Add the lala price first.", F.lprice);
+    if (!need && d.milkIn === 0 && d.soldAm === 0 && d.soldPm === 0 && d.lala === 0 && d.eggIn === 0 && d.eggSold === 0 && d.rent + d.elec + d.papers === 0) return stop("Add the milk in first.", F.am);
+    if (live && !need) return stop("Use the Record buttons.");
+    m = live ? mergeDay(savedBase(key), d, need) : d; c = calc(m, cs.m, cs.g, cs.l);
+    if (c.stock < -0.0001 || c.out < -0.0001) return stop("Milk sold and lala are more than the milk you had. Check the litres.");
+    if (c.eggOut < -0.0001) return stop("Check the egg trays first.");
+    if (c.lalaOut < -0.0001) return stop("Lala sold is more than the lala you have.");
+    var btns = [$("save"), $("save-exp"), $("rec-am"), $("rec-pm"), $("recs-am"), $("recs-pm"), $("rec-egg"), $("rec-lala"), $("recs-egg"), $("recs-lala")];
+    btns.forEach(function (b) { b.disabled = true; });
+    persist(key, m).then(function () {
+      entries[key] = m;
+      if (live) resetAfter(need, m); else { editingKey = null; loadDate(); }
+      renderAll();
+      toast(live ? message : "Updated " + dayLabel(key));
+    }).catch(function (err) {
+      toast(err && err.code === "invalid_argument" ? "You can view this book but not change it." : "Could not save. Try again.");
+    }).then(function () { btns.forEach(function (b) { b.disabled = false; }); });
+  }
+  $("save").addEventListener("click", function () { doSave(); });
+  $("save-exp").addEventListener("click", function () { doSave("Expenses saved", "exp"); });
+  $("rec-lala").addEventListener("click", function () { doSave("Maziwa lala recorded", "lala"); });
+  $("recs-lala").addEventListener("click", function () { doSave("Lala sales recorded", "lalaSold"); });
+  $("recs-egg").addEventListener("click", function () { doSave("Egg sales recorded", "eggSold"); });
+  $("rec-egg").addEventListener("click", function () { doSave("Eggs recorded", "egg"); });
+  $("rec-am").addEventListener("click", function () { doSave("Morning milk recorded", "am"); });
+  $("rec-pm").addEventListener("click", function () { doSave("Evening milk recorded", "pm"); });
+  $("recs-am").addEventListener("click", function () { doSave("Morning sales recorded", "amSold"); });
+  $("recs-pm").addEventListener("click", function () { doSave("Evening sales recorded", "pmSold"); });
+
+  function disarm() {}
+  $("edit-today").addEventListener("click", function () { editingKey = todayKey(); loadDate(); });
+
+  /* ---------- shared bits ---------- */
+  var DROP = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6c10.5 12.8 18 21.6 18 32a18 18 0 0 1-36 0c0-10.4 7.500-19.200 18-32z" fill="none" stroke="var(--accent)" stroke-width="3"/><path d="M24 40a8 8 0 0 0 7 7.500" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/></svg>';
+  function emptyBox(title, text) { return '<div class="empty">' + DROP + '<b>' + title + '</b><span>' + text + '</span></div>'; }
+  function stat(l, v) { return '<div class="stat"><span>' + l + '</span><b>' + v + '</b></div>'; }
+  function dayBtn(key, right, rcls, sub) {
+    return '<button class="day" type="button" data-key="' + key + '"><span class="d">' + dayLabel(key) + '</span><span class="p ' + rcls + '">' + right + '</span><span class="s">' + sub + '</span></button>';
+  }
+  function editDay(key) { editingKey = key; loadDate(); showTab("today"); $("day-name").scrollIntoView({ block: "start" }); }
+  ["cashbook", "hist-list"].forEach(function (id) {
+    $(id).addEventListener("click", function (ev) { var b = ev.target.closest(".day"); if (b) editDay(b.getAttribute("data-key")); });
+  });
+
+  /* ---------- Wallet ---------- */
+  function renderWallet() {
+    var days = allDays(), coll = 0, paid = 0, costs = 0;
+    days.forEach(function (d) { coll += d.c.coll; paid += d.c.paid; costs += d.c.costs; });
+    var bal = opening + coll - paid - costs; $("w-balance").innerHTML = '<span class="cur">KSh</span> ' + money(bal);
+    var bl = money(bal).length; $("w-balance").style.fontSize = bl > 9 ? "1.2rem" : bl > 7 ? "1.55rem" : "";
+    $("w-coll").textContent = ksh(coll); $("w-paid").textContent = ksh(paid); $("w-costs").textContent = ksh(costs);
+    var last = days.length ? days[days.length - 1].c : null;
+    $("w-stock").textContent = litres(last ? Math.max(0, last.out) : 0);
+    $("w-estock").textContent = trays(last ? Math.max(0, last.eggOut) : 0);
+    var ym = todayKey().slice(0, 7), spent = 0;
+    days.forEach(function (d) { if (d.key.slice(0, 7) === ym) spent += d.c.costs; });
+    $("exp-month").textContent = ksh(spent);
+        var lg = $("open-log");
+    lg.innerHTML = openLog.length ? openLog.slice().reverse().slice(0, 20).map(function (x) {
+      var d = new Date(x.t), when = isNaN(d) ? "" : d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) + ", " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+      return '<div class="oprow"><b>' + ksh(x.to) + '</b><span>' + when + '</span><span>was ' + ksh(x.from) + '</span></div>';
+    }).join("") : '<div class="hint"><span>No changes yet. Set your starting balance above.</span></div>';
+    var fo = $("f-open"); if (document.activeElement !== fo) fo.value = opening ? String(opening) : "";
+    var box = $("cashbook");
+    if (!days.length) { box.innerHTML = emptyBox("No cash movements yet", "Save a day and the money in and out shows here."); return; }
+    box.innerHTML = days.slice().reverse().slice(0, 30).map(function (d) {
+      return dayBtn(d.key, (d.c.cash > 0 ? "+" : "") + ksh(d.c.cash), sgn(d.c.cash),
+        "+" + money(d.c.coll) + " in · -" + money(d.c.paid) + " stock · -" + money(d.c.costs) + " costs (KSh)");
+    }).join("");
+  }
+  $("open-toggle").addEventListener("click", function () { var pn = $("open-panel"); pn.hidden = !pn.hidden; $("open-toggle").textContent = pn.hidden ? "History" : "Hide history"; });
+  $("set-open").addEventListener("click", function () {
+    var n = num($("f-open").value);
+    if (n === opening) { toast("That is already the starting balance"); return; }
+    var entry = { t: new Date().toISOString(), from: opening, to: n };
+    var log = openLog.concat([entry]).slice(-100);
+    var done = function () { opening = n; openLog = log; renderWallet(); toast("Starting balance set"); };
+    if (wdoc) wdoc.set({ opening: n, log: log }).then(done).catch(function (err) {
+      toast(err && err.code === "invalid_argument" ? "You can view this book but not change it." : "Could not save.");
+    });
+    else { opening = n; openLog = log; saveLocal(); renderWallet(); toast("Starting balance set"); }
+  });
+
+  /* ---------- History (inside the Today tab) ---------- */
+  function niceMax(m) {
+    if (m <= 0) return 10;
+    var mag = Math.pow(10, Math.floor(Math.log(m) / Math.LN10)), n = m / mag;
+    return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * mag;
+  }
+  function compact(n) {
+    var a = Math.abs(n);
+    if (a >= 1000) return (n < 0 ? "-" : "") + (Math.round(a / 100) / 10).toString().replace(/\.0$/, "") + "k";
+    return String(Math.round(n * 10) / 10);
+  }
+  function buckets(period) {
+    var out = [], now = new Date(), i;
+    if (period === "day") {
+      for (i = 6; i >= 0; i--) { var k = daysAgoKey(i); out.push({ s: k, e: k, label: parseKey(k).toLocaleDateString("en-GB", { weekday: "short" }) }); }
+    } else if (period === "week") {
+      var dow = (now.getDay() + 6) % 7;
+      for (i = 7; i >= 0; i--) {
+        var st = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow - 7 * i);
+        var en = new Date(st.getFullYear(), st.getMonth(), st.getDate() + 6);
+        out.push({ s: keyOf(st), e: keyOf(en), label: st.getDate() + " " + st.toLocaleDateString("en-GB", { month: "short" }) });
+      }
+    } else {
+      for (i = 5; i >= 0; i--) {
+        var f = new Date(now.getFullYear(), now.getMonth() - i, 1), l = new Date(f.getFullYear(), f.getMonth() + 1, 0);
+        out.push({ s: keyOf(f), e: keyOf(l), label: f.toLocaleDateString("en-GB", { month: "short" }) });
+      }
+    }
+    return out;
+  }
+  function bars(items) {
+    var W = 320, H = 180, L = 36, R = 6, T = 18, B = 24, plotH = H - T - B;
+    var max = 0, min = 0;
+    items.forEach(function (it) { max = Math.max(max, it.a + it.b); min = Math.min(min, it.a); });
+    var top = niceMax(max), bot = min < 0 ? -niceMax(-min) : 0, span = top - bot;
+    function y(v) { return T + (top - v) / span * plotH; }
+    var base = y(0), n = items.length, slot = (W - L - R) / n, bw = Math.min(30, slot * 0.66);
+    var s = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="History bar chart">';
+    (bot < 0 ? [bot, 0, top] : [0, top / 2, top]).forEach(function (v) {
+      s += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '"/>';
+      s += '<text x="' + (L - 5) + '" y="' + (y(v) + 3).toFixed(1) + '" text-anchor="end">' + compact(v) + '</text>';
+    });
+    items.forEach(function (it, k) {
+      var x = L + slot * k + (slot - bw) / 2, cx = (x + bw / 2).toFixed(1);
+      var ha = Math.max(it.a, 0) / span * plotH, hb = it.b / span * plotH, hn = Math.max(-it.a, 0) / span * plotH;
+      if (ha > 0) s += '<rect class="' + (it.cls || "fresh") + '" x="' + x.toFixed(1) + '" y="' + (base - ha).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + ha.toFixed(1) + '" rx="3"/>';
+      if (hb > 0) s += '<rect class="lala" x="' + x.toFixed(1) + '" y="' + (base - ha - hb).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + hb.toFixed(1) + '" rx="3"/>';
+      if (hn > 0) s += '<rect class="negbar" x="' + x.toFixed(1) + '" y="' + base.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + hn.toFixed(1) + '" rx="3"/>';
+      var v = it.a + it.b;
+      if (Math.abs(v) > 0.0001) {
+        var ty = v > 0 ? Math.max(base - ha - hb - 4, 10) : Math.min(base + hn + 10, H - B - 2);
+        s += '<text class="peak" x="' + cx + '" y="' + ty.toFixed(1) + '" text-anchor="middle">' + compact(v) + '</text>';
+      }
+      s += '<text x="' + cx + '" y="' + (H - 8) + '" text-anchor="middle">' + it.label + '</text>';
+    });
+    return s + '</svg>';
+  }
+  function renderHistory() {
+    var all = allDays(), box = $("hist"), list = $("hist-list");
+    $("hist-body").hidden = !hist.open;
+    $("hist-toggle").textContent = hist.open ? "Hide" : "Show";
+    document.querySelectorAll("#hist-card .chips").forEach(function (g) {
+      var cur = hist[g.getAttribute("data-for")];
+      g.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.getAttribute("data-v") === cur ? "true" : "false"); });
+    });
+    if (!all.length) {
+      box.innerHTML = emptyBox("No history yet", "Save your first day and your profit, litres and expenses show up here as bars.");
+      list.innerHTML = ""; $("hist-more").hidden = true; $("hist-title").hidden = true; return;
+    }
+    $("hist-title").hidden = false;
+    var m = hist.metric, items = [], total = 0, active = 0;
+    buckets(hist.period).forEach(function (b) {
+      var a = 0, bb = 0, has = false;
+      all.forEach(function (d) {
+        if (d.key < b.s || d.key > b.e) return;
+        if (d.c.open && (m === "profit" || m === "litres")) return;
+        has = true;
+        if (m === "profit") a += d.c.profit;
+        else if (m === "costs") a += d.c.costs;
+        else if (m === "eggs") a += d.e.eggSold;
+        else { a += Math.max(0, d.c.fresh); bb += Math.max(0, d.c.lala); }
+      });
+      if (has) active++;
+      total += a + bb;
+      items.push({ a: a, b: bb, label: b.label, cls: m === "costs" ? "exp" : m === "eggs" ? "egg" : "fresh" });
+    });
+    var unit = hist.period === "day" ? "day" : hist.period === "week" ? "week" : "month";
+    var span = hist.period === "day" ? "last 7 days" : hist.period === "week" ? "last 8 weeks" : "last 6 months";
+    var name = m === "profit" ? "Profit" : m === "litres" ? "Litres sold" : m === "eggs" ? "Egg trays sold" : "Expenses";
+    var fmt = m === "litres" ? litres : m === "eggs" ? function (n) { return trays(n) + " trays"; } : ksh;
+    var h = '<div><span class="pill">' + name + ' · ' + span + '</span></div>' +
+      '<div class="bigfig ' + (m === "profit" ? sgn(total) : "") + '">' + fmt(total) + '</div>';
+    if (m === "litres") h += '<div class="legend"><span class="a"><i></i>Fresh</span><span class="b"><i></i>Maziwa lala</span></div>';
+    h += bars(items);
+    h += '<div class="hint"><span>Average per ' + unit + ' with sales</span><b>' + (active ? fmt(total / active) : "-") + '</b></div>';
+    box.innerHTML = h;
+
+    var rows = all.slice().reverse(), shown = rows.slice(0, hist.more);
+    list.innerHTML = shown.map(function (d) {
+      var eggs = d.e.eggSold > 0 ? " · " + trays(d.e.eggSold) + " trays eggs" : "";
+      if (d.c.open) return dayBtn(d.key, "Open", "", litres(d.e.milkIn) + " in so far" + eggs + " · expenses " + ksh(d.c.costs));
+      var sub = litres(d.c.sold) + " sold" + (d.c.lala > 0 ? " (" + litres(d.c.lala) + " lala)" : "") + eggs + " · expenses " + ksh(d.c.costs);
+      return dayBtn(d.key, ksh(d.c.profit), sgn(d.c.profit), sub);
+    }).join("");
+    $("hist-more").hidden = rows.length <= hist.more;
+  }
+  document.querySelectorAll("#hist-card .chips").forEach(function (g) {
+    g.addEventListener("click", function (ev) {
+      var b = ev.target.closest(".chip"); if (!b) return;
+      hist[g.getAttribute("data-for")] = b.getAttribute("data-v"); renderHistory();
+    });
+  });
+  $("hist-toggle").addEventListener("click", function () { hist.open = !hist.open; renderHistory(); });
+  $("hist-more").addEventListener("click", function () { hist.more += 10; renderHistory(); });
+
+  /* ---------- tabs + chips ---------- */
+  function renderAll() { refreshForm(); renderWallet(); renderHistory(); renderReports(); }
+  function showTab(name) {
+    ["today", "wallet", "reports"].forEach(function (t) { $("view-" + t).hidden = t !== name; });
+    document.querySelectorAll(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === name ? "true" : "false"); });
+  }
+  document.querySelector(".tabs").addEventListener("click", function (ev) {
+    var b = ev.target.closest(".tab"); if (b) { showTab(b.getAttribute("data-tab")); window.scrollTo(0, 0); }
+  });
+  /* ---------- boot ---------- */
+  function setSync(text, online) { var s = $("sync"); s.textContent = text; s.className = "sync" + (online ? " online" : ""); }
+  lastToday = todayKey();
+  renderAll();
+  // new day: the form moves to the new date by itself
+  setInterval(function () {
+    var t = todayKey();
+    if (t !== lastToday) { lastToday = t; if (!editingKey) loadDate(); renderAll(); }
+  }, 30000);
+
+
+  /* ---------- Reports (Excel) ---------- */
+  var rep = { mode: "month" };
+  function repPrefix() {
+    var v = rep.mode === "month" ? $("rep-month").value : String($("rep-year").value).trim();
+    return (rep.mode === "month" ? /^\d{4}-\d{2}$/ : /^\d{4}$/).test(v) ? v : "";
+  }
+  function repData() {
+    var pre = repPrefix(), all = allDays(), days = [], before = 0;
+    var t = { milkIn: 0, fresh: 0, sold: 0, lalaMade: 0, lalaSold: 0, eggIn: 0, eggSold: 0, coll: 0, paid: 0, rent: 0, elec: 0, papers: 0, costs: 0, milkProfit: 0, eggProfit: 0, profit: 0, cash: 0 };
+    if (pre) {
+      var start = pre + (rep.mode === "month" ? "-01" : "-01-01");
+      all.forEach(function (d) { if (d.key.indexOf(pre) === 0) days.push(d); else if (d.key < start) before += d.c.cash; });
+    }
+    days.forEach(function (d) {
+      t.milkIn += d.e.milkIn; t.fresh += Math.max(0, d.c.fresh); t.sold += Math.max(0, d.c.sold); t.lalaMade += d.e.lala; t.lalaSold += d.c.lala;
+      t.eggIn += d.e.eggIn; t.eggSold += d.e.eggSold; t.coll += d.c.coll; t.paid += d.c.paid; t.rent += d.e.rent; t.elec += d.e.elec; t.papers += d.e.papers;
+      t.costs += d.c.costs; t.milkProfit += d.c.milkProfit; t.eggProfit += d.c.eggProfit; t.profit += d.c.profit; t.cash += d.c.cash;
+    });
+    return { pre: pre, days: days, t: t, openBal: opening + before };
+  }
+  function renderReports() {
+    if (!rep || !$("rep-month")) return;
+    var r = repData(), t = r.t;
+    $("rp-profit").textContent = ksh(t.profit); $("rp-profit").className = "bigfig " + sgn(t.profit);
+    $("rp-sold").textContent = litres(t.sold); $("rp-coll").textContent = ksh(t.coll);
+    $("rp-paid").textContent = ksh(t.paid); $("rp-exp").textContent = ksh(t.costs);
+    $("rep-note").textContent = !r.pre ? "Choose a " + rep.mode + " to see the totals." : r.days.length ? r.days.length + (r.days.length === 1 ? " day" : " days") + " with records in this period." : "No records in this period yet.";
+  }
+  function monthName(k) { return parseKey(k + "-01").toLocaleDateString("en-GB", { month: "long", year: "numeric" }); }
+  function makeTable(cols, rows, totalLabel) {
+    var X = window.XLSX, aoa = [cols.map(function (c) { return c.h; })];
+    rows.forEach(function (r) { aoa.push(cols.map(function (c) { var v = c.get(r); return c.z && typeof v === "number" ? { t: "n", v: v, z: c.z } : v; })); });
+    var n = rows.length, tot = cols.map(function (c, i) {
+      if (i === 0) return totalLabel;
+      if (!c.sum) return "";
+      var v = 0; rows.forEach(function (r) { v += c.get(r); });
+      return { t: "n", v: v, z: c.z, f: "SUM(" + X.utils.encode_col(i) + "2:" + X.utils.encode_col(i) + (n + 1) + ")" };
+    });
+    aoa.push(tot);
+    var ws = X.utils.aoa_to_sheet(aoa);
+    ws["!cols"] = cols.map(function (c, i) { return { wch: i === 0 ? 16 : Math.max(12, Math.min(22, c.h.length + 2)) }; });
+    return ws;
+  }
+  function buildReport() {
+    var X = window.XLSX, r = repData(), t = r.t, wb = X.utils.book_new(), M = "#,##0", L = "#,##0.0", T = "0.##";
+    var label = rep.mode === "month" ? monthName(r.pre) : r.pre;
+    // summary
+    var S = [["Maziwa Book report"], [rep.mode === "month" ? "Month" : "Year", label], ["Created", new Date().toLocaleString("en-GB")], [],
+      ["Wallet (KSh)", ""],
+      ["Opening balance", { t: "n", v: r.openBal, z: M }],
+      ["Money collected", { t: "n", v: t.coll, z: M }],
+      ["Less: stock bought", { t: "n", v: t.paid, z: M }],
+      ["Less: expenses", { t: "n", v: t.costs, z: M }],
+      ["Closing balance", { t: "n", v: r.openBal + t.coll - t.paid - t.costs, z: M, f: "B6+B7-B8-B9" }], [],
+      ["Profit (KSh)", ""],
+      ["Milk profit", { t: "n", v: t.milkProfit, z: M }],
+      ["Egg profit", { t: "n", v: t.eggProfit, z: M }],
+      ["Less: expenses", { t: "n", v: t.costs, z: M }],
+      ["Net profit", { t: "n", v: t.milkProfit + t.eggProfit - t.costs, z: M, f: "B13+B14-B15" }], [],
+      ["Quantities", ""],
+      ["Milk in (L)", { t: "n", v: t.milkIn, z: L }],
+      ["Fresh milk sold (L)", { t: "n", v: t.fresh, z: L }],
+      ["Maziwa lala made (L)", { t: "n", v: t.lalaMade, z: L }],
+      ["Maziwa lala sold (L)", { t: "n", v: t.lalaSold, z: L }],
+      ["Egg trays in", { t: "n", v: t.eggIn, z: T }],
+      ["Egg trays sold", { t: "n", v: t.eggSold, z: T }],
+      ["Days with records", { t: "n", v: r.days.length }]];
+    var wsS = X.utils.aoa_to_sheet(S); wsS["!cols"] = [{ wch: 26 }, { wch: 20 }];
+    X.utils.book_append_sheet(wb, wsS, "Summary");
+    // months (year report only)
+    if (rep.mode === "year") {
+      var by = {}, order = [];
+      r.days.forEach(function (d) {
+        var k = d.key.slice(0, 7);
+        if (!by[k]) { by[k] = { k: k, days: 0, milkIn: 0, fresh: 0, lalaSold: 0, eggSold: 0, coll: 0, paid: 0, costs: 0, profit: 0 }; order.push(k); }
+        var m = by[k]; m.days++; m.milkIn += d.e.milkIn; m.fresh += Math.max(0, d.c.fresh); m.lalaSold += d.c.lala; m.eggSold += d.e.eggSold;
+        m.coll += d.c.coll; m.paid += d.c.paid; m.costs += d.c.costs; m.profit += d.c.profit;
+      });
+      var mc = [{ h: "Month", get: function (m) { return monthName(m.k); } }, { h: "Days", get: function (m) { return m.days; }, sum: 1 },
+        { h: "Milk in (L)", get: function (m) { return m.milkIn; }, sum: 1, z: L }, { h: "Fresh milk sold (L)", get: function (m) { return m.fresh; }, sum: 1, z: L },
+        { h: "Lala sold (L)", get: function (m) { return m.lalaSold; }, sum: 1, z: L }, { h: "Egg trays sold", get: function (m) { return m.eggSold; }, sum: 1, z: T },
+        { h: "Money collected (KSh)", get: function (m) { return m.coll; }, sum: 1, z: M }, { h: "Stock bought (KSh)", get: function (m) { return m.paid; }, sum: 1, z: M },
+        { h: "Expenses (KSh)", get: function (m) { return m.costs; }, sum: 1, z: M }, { h: "Profit (KSh)", get: function (m) { return m.profit; }, sum: 1, z: M }];
+      X.utils.book_append_sheet(wb, makeTable(mc, order.map(function (k) { return by[k]; }), "TOTAL"), "Months");
+    }
+    // daily
+    var dc = [{ h: "Date", get: function (d) { return d.key; } },
+      { h: "Milk in morning (L)", get: function (d) { return d.e.inAm; }, sum: 1, z: L }, { h: "Milk in evening (L)", get: function (d) { return d.e.inPm; }, sum: 1, z: L },
+      { h: "Fresh milk sold (L)", get: function (d) { return Math.max(0, d.c.fresh); }, sum: 1, z: L }, { h: "Lala made (L)", get: function (d) { return d.e.lala; }, sum: 1, z: L },
+      { h: "Lala sold (L)", get: function (d) { return d.c.lala; }, sum: 1, z: L }, { h: "Milk left over (L)", get: function (d) { return Math.max(0, d.c.out); }, z: L },
+      { h: "Egg trays in", get: function (d) { return d.e.eggIn; }, sum: 1, z: T }, { h: "Egg trays sold", get: function (d) { return d.e.eggSold; }, sum: 1, z: T },
+      { h: "Egg trays left", get: function (d) { return Math.max(0, d.c.eggOut); }, z: T },
+      { h: "Money collected (KSh)", get: function (d) { return d.c.coll; }, sum: 1, z: M }, { h: "Stock bought (KSh)", get: function (d) { return d.c.paid; }, sum: 1, z: M },
+      { h: "Rent (KSh)", get: function (d) { return d.e.rent; }, sum: 1, z: M }, { h: "Electricity (KSh)", get: function (d) { return d.e.elec; }, sum: 1, z: M },
+      { h: "Papers (KSh)", get: function (d) { return d.e.papers; }, sum: 1, z: M }, { h: "Total expenses (KSh)", get: function (d) { return d.c.costs; }, sum: 1, z: M },
+      { h: "Profit (KSh)", get: function (d) { return d.c.profit; }, sum: 1, z: M }, { h: "Cash in or out (KSh)", get: function (d) { return d.c.cash; }, sum: 1, z: M }];
+    X.utils.book_append_sheet(wb, makeTable(dc, r.days, "TOTAL"), "Daily");
+    return { wb: wb, name: "Maziwa-Report-" + r.pre + ".xlsx", n: r.days.length };
+  }
+  $("rep-chips").addEventListener("click", function (ev) {
+    var b = ev.target.closest(".chip"); if (!b) return;
+    rep.mode = b.getAttribute("data-v");
+    document.querySelectorAll("#rep-chips .chip").forEach(function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
+    $("rep-month-f").hidden = rep.mode !== "month"; $("rep-year-f").hidden = rep.mode !== "year"; renderReports();
+  });
+  $("rep-month").addEventListener("input", renderReports);
+  $("rep-year").addEventListener("input", renderReports);
+  $("rep-month").value = todayKey().slice(0, 7); $("rep-year").value = todayKey().slice(0, 4);
+  $("rep-dl").addEventListener("click", function () {
+    if (!window.XLSX) { toast("Excel tool did not load. Check the internet and reload."); return; }
+    if (!repPrefix()) { toast("Choose the " + rep.mode + " first."); return; }
+    var b = buildReport();
+    if (!b.n) { toast("No records in that period."); return; }
+    try { window.XLSX.writeFile(b.wb, b.name); toast("Report downloaded"); } catch (e) { toast("Could not make the file."); }
+  });
+  renderReports();
+
+  /* ---------- Sign in + online database (Firebase) ---------- */
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyA8zLbCgm8j4XTKwEul-rUufxfe0tAJpxY",
+    authDomain: "maziwa-sirlim.firebaseapp.com",
+    projectId: "maziwa-sirlim",
+    storageBucket: "maziwa-sirlim.firebasestorage.app",
+    messagingSenderId: "358783404940",
+    appId: "1:358783404940:web:a8a72f0bacf7a92f7ba4a9"
+  };
+  var fbAuth = null, fbDb = null, unsubs = [];
+  function gateShow(which, msg) {
+    $("gate-load").hidden = which !== "load"; $("login").hidden = which !== "form";
+    if (which === "load" && msg) $("gate-load").textContent = msg;
+  }
+  function saveErr(err) { toast(err && err.code === "permission-denied" ? "This login is not allowed to change the books." : "Could not save. Check the internet."); }
+  function fast(ref) {   // write straight away, the app does not wait for the network
+    return { set: function (d) { ref.set(d).catch(saveErr); return Promise.resolve(); }, delete: function () { ref.delete().catch(saveErr); return Promise.resolve(); } };
+  }
+  function startSession(user) {
+    var first = true;
+    document.body.classList.remove("locked"); $("acct").textContent = user.email || "";
+    store = { doc: function (k) { return fast(fbDb.collection("days").doc(k)); } };
+    wdoc = fast(fbDb.doc("settings/wallet"));
+    setSync("Connecting…", false);
+    unsubs.push(fbDb.collection("days").onSnapshot(function (snap) {
+      var m = {};
+      snap.docs.forEach(function (d) { if (KEY.test(d.id)) m[d.id] = d.data(); });
+      entries = m;
+      setSync(snap.metadata && snap.metadata.fromCache ? "Offline · will sync" : "Saved online", !(snap.metadata && snap.metadata.fromCache));
+      if (first) { first = false; loadDate(); }
+      renderAll();
+    }, function (err) { setSync(err && err.code === "permission-denied" ? "No access" : "Offline", false); }));
+    unsubs.push(fbDb.doc("settings/wallet").onSnapshot(function (snap) {
+      var wd = snap.exists ? (snap.data() || {}) : {}; opening = num(wd.opening); openLog = Array.isArray(wd.log) ? wd.log : [];
+      renderWallet(); renderReports();
+    }, function () {}));
+  }
+  function endSession() {
+    unsubs.forEach(function (u) { try { u(); } catch (e) {} }); unsubs = [];
+    store = null; wdoc = null; entries = {}; opening = 0; openLog = []; editingKey = null;
+    document.body.classList.add("locked"); showTab("today"); gateShow("form"); renderAll();
+  }
+  $("login").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var err = $("lg-err"), btn = $("lg-btn"); err.hidden = true; btn.disabled = true;
+    fbAuth.signInWithEmailAndPassword($("lg-email").value.trim(), $("lg-pass").value).then(function () { $("lg-pass").value = ""; })
+      .catch(function (e) {
+        var c = e && e.code || "";
+        err.textContent = c === "auth/too-many-requests" ? "Too many tries. Wait a few minutes and try again."
+          : c === "auth/network-request-failed" ? "No internet connection."
+          : /invalid|wrong-password|user-not-found|invalid-email/.test(c) ? "Wrong email or password." : "Could not sign in. Try again.";
+        err.hidden = false;
+      }).then(function () { btn.disabled = false; });
+  });
+  $("signout").addEventListener("click", function () { if (fbAuth) fbAuth.signOut(); });
+  lastToday = todayKey();
+  if (!window.firebase) { gateShow("load", "Could not load. Check the internet and reload the page."); }
+  else {
+    try {
+      window.firebase.initializeApp(FIREBASE_CONFIG);
+      fbAuth = window.firebase.auth(); fbDb = window.firebase.firestore();
+      try { fbDb.enablePersistence({ synchronizeTabs: true }).catch(function () {}); } catch (e) {}
+      fbAuth.onAuthStateChanged(function (user) { if (user) startSession(user); else endSession(); });
+    } catch (e) { gateShow("load", "Could not start. Reload the page."); }
+  }
+})();
+</script>
+
+</body></html>
