@@ -1118,7 +1118,7 @@ body { background: radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(
     $("gate-load").hidden = which !== "load"; $("login").hidden = which !== "form";
     if (which === "load" && msg) $("gate-load").textContent = msg;
   }
-  function saveErr(err) { toast(err && err.code === "permission-denied" ? "This login is not allowed to change the books." : "Could not save. Check the internet."); }
+  function saveErr(err) { var c = err && err.code || ""; toast(c === "permission-denied" ? "Not allowed to save (rules). Code: permission-denied" : "Could not save online. Code: " + (c || "unknown")); setSync("Not saving online", false); }
   function fast(ref) {   // write straight away, the app does not wait for the network
     return { set: function (d) { ref.set(d).catch(saveErr); return Promise.resolve(); }, delete: function () { ref.delete().catch(saveErr); return Promise.resolve(); } };
   }
@@ -1128,14 +1128,15 @@ body { background: radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(
     store = { doc: function (k) { return fast(fbDb.collection("days").doc(k)); } };
     wdoc = fast(fbDb.doc("settings/wallet"));
     setSync("Connecting…", false);
-    unsubs.push(fbDb.collection("days").onSnapshot(function (snap) {
+    unsubs.push(fbDb.collection("days").onSnapshot({ includeMetadataChanges: true }, function (snap) {
       var m = {};
       snap.docs.forEach(function (d) { if (KEY.test(d.id)) m[d.id] = d.data(); });
       entries = m;
-      setSync(snap.metadata && snap.metadata.fromCache ? "Offline · will sync" : "Saved online", !(snap.metadata && snap.metadata.fromCache));
+      var fc = snap.metadata && snap.metadata.fromCache, pw = snap.metadata && snap.metadata.hasPendingWrites;
+      setSync(fc ? (navigator.onLine ? "Connecting…" : "Offline · will sync") : pw ? "Saving…" : "Saved online", !fc && !pw);
       if (first) { first = false; loadDate(); }
       renderAll();
-    }, function (err) { setSync(err && err.code === "permission-denied" ? "No access" : "Offline", false); }));
+    }, function (err) { var c = err && err.code || "unknown"; setSync(c === "permission-denied" ? "No access" : "Not connected", false); toast("Online error: " + c); }));
     unsubs.push(fbDb.doc("settings/wallet").onSnapshot(function (snap) {
       var wd = snap.exists ? (snap.data() || {}) : {}; opening = num(wd.opening); openLog = Array.isArray(wd.log) ? wd.log : [];
       renderWallet(); renderReports();
@@ -1165,6 +1166,7 @@ body { background: radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(
     try {
       window.firebase.initializeApp(FIREBASE_CONFIG);
       fbAuth = window.firebase.auth(); fbDb = window.firebase.firestore();
+      try { fbDb.settings({ experimentalAutoDetectLongPolling: true, merge: true }); } catch (e) {}
       try { fbDb.enablePersistence({ synchronizeTabs: true }).catch(function () {}); } catch (e) {}
       fbAuth.onAuthStateChanged(function (user) { if (user) startSession(user); else endSession(); });
     } catch (e) { gateShow("load", "Could not start. Reload the page."); }
